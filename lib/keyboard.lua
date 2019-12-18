@@ -147,15 +147,11 @@ setmetatable(kb.keys,
 })
 
 local function findKey(c)
-  for name, value in pairs(kb.keys) do
-    if value == c then
-      return name
-    end
-  end
+  return string.char(c)
 end
 
-function kb.pullKey()
-  local sig, kbaddr, char, code, name = computer.pullSignal()
+function kb.pullKey(eventData)
+  local sig, kbaddr, char, code, name = table.unpack(eventData)
   if sig == "key_down" then
     return {char = findKey(code), code = code}
   end
