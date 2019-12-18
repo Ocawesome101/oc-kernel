@@ -1,2 +1,4 @@
 # oc-kernel
-Simple, cooperative-multitasked kernel for OpenComputers.
+Simple, cooperatively-multitasked kernel for OpenComputers.
+
+note to self: needs work
