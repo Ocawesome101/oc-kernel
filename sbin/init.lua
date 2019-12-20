@@ -34,14 +34,6 @@ function clear()
   computer.pullSignal(0)
 end
 
-status("Loading I/O library")
-local ok, err = loadfile("/lib/io.lua")
-if not ok then
-  error(err)
-end
-
-_G.io = ok()
-
 status("Loading keyboard library")
 local ok, err = loadfile("/lib/keyboard.lua")
 if not ok then
@@ -49,6 +41,14 @@ if not ok then
 end
 
 _G.kb = ok()
+
+status("Loading I/O library")
+local ok, err = loadfile("/lib/io.lua")
+if not ok then
+  error(err)
+end
+
+_G.io = ok()
 
 status("Starting component listener")
 kernel.psinit("/lib/component_listener.lua")
