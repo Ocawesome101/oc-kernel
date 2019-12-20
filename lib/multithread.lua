@@ -4,11 +4,13 @@ local mt = {}
 local eventData = {}
 mt.pstree = {}
 
+-- <hack>
 local pullSignal = computer.pullSignal
 
 function computer.pullSignal()
   return table.unpack(eventData)
 end
+-- </hack>
 
 function mt.psinit(file, ...)
   local ok, err = loadfile(file)
