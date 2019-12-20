@@ -42,6 +42,14 @@ end
 
 _G.io = ok()
 
+status("Loading keyboard library")
+local ok, err = loadfile("/lib/keyboard.lua")
+if not ok then
+  error(err)
+end
+
+_G.kb = ok()
+
 status("Starting component listener")
 kernel.psinit("/lib/component_listener.lua")
 
