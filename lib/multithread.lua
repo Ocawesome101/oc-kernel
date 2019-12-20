@@ -1,8 +1,14 @@
 -- Rudimentary task scheduler --
 
 local mt = {}
-
+local eventData = {}
 mt.pstree = {}
+
+local pullSignal = computer.pullSignal
+
+function computer.pullSignal()
+  return table.unpack(eventData)
+end
 
 function mt.psinit(file, ...)
   local ok, err = loadfile(file)
@@ -10,17 +16,18 @@ function mt.psinit(file, ...)
     error(err)
   end
 
-  local crt = coroutine.create(ok)
+  local crt = coroutine.create(ok, ...)
   local pid = #mt.pstree + 1
   
-  table.insert(mt.pstree,{ps = crt, args = {...}})
+  table.insert(mt.pstree,{ps = crt})
 
   return pid
 end
 
 function mt.psupdate()
   for i=1, #mt.pstree, 1 do
-    coroutine.resume(mt.pstree[i].ps, table.unpack(mt.pstree[i].args))
+    eventData = pullSignal()
+    coroutine.resume(mt.pstree[i].ps)
   end
 end
 
