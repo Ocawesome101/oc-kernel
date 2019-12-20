@@ -1,7 +1,6 @@
 -- Miscellaneous I/O functions --
 
 local w, h = gpu.getResolution()
-local kb = dofile("/lib/keyboard.lua")
 local y = 1
 local x = 1
 
