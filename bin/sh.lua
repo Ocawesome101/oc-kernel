@@ -139,7 +139,6 @@ local function runBuiltin(prg, ...)
 end
 
 local function tokenize( ... ) -- Straight out of the craftOS shell :P
-    print("tokenize")
     local sLine = table.concat( { ... }, " " )
     local tWords = {}
     local bQuoted = false
