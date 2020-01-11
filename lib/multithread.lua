@@ -4,14 +4,6 @@ local mt = {}
 local eventData = {}
 mt.pstree = {}
 
--- <hack>
-local pullSignal = computer.pullSignal
-
-function computer.pullSignal()
-  return table.unpack(eventData)
-end
--- </hack>
-
 function mt.psinit(file, ...)
   local ok, err = loadfile(file)
   if not ok then
@@ -28,7 +20,6 @@ end
 
 function mt.psupdate()
   for i=1, #mt.pstree, 1 do
-    eventData = pullSignal()
     coroutine.resume(mt.pstree[i].ps)
   end
 end

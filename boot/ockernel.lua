@@ -51,11 +51,11 @@ end
 -- Boot --
 status("Booting " .. version .. " from disk " .. boot_address)
 
-status("Total memory:", tostring(computer.totalMemory()))
+status("Total memory: " .. tostring(computer.totalMemory()/1024) .. "K")
 
 status("Initializing loadfile")
 
-local function loadfile(file)
+function loadfile(file)
   local h, r = assert(invoke(boot_address, "open", file))
   if not h then
     error(r)
@@ -84,28 +84,6 @@ if not ok then
 end
 
 ok(boot_address)
-
-status("Reinitializing loadfile in _G")
-
---computer.beep(650,0.1)
-function _G.loadfile(file)
-  local h, r = fs.open(file, "r")
-  if not h then
-    error(r)
-  end
-  local b = ""
-  repeat
---    computer.beep(1500,0.1)
-    local d, r = fs.read(h, math.huge)
-    if not d and r then
-      error(r)
-    end
---    computer.beep(1000,0.1)
-    b = b .. (d or "")
-  until not d
-  fs.close(h)
-  return load(b, "=" .. file)
-end
 
 status("Starting init")
 local ok, err = loadfile("/sbin/init.lua")

@@ -62,7 +62,7 @@ function print(...)
   newline()
 end
 
-function io.read()
+function io.read(substituteChar)
   local rtn = ""
   local stx = x
   while true do
@@ -71,8 +71,7 @@ function io.read()
 --      computer.beep(1000,0.1)
       if kp.code == kb.keys.backspace then
 --        computer.beep(800,0.1)
-        rtn = rtn:sub(1,#rtn-1)
-        x = x - 1
+        rtn = rtn:sub(1,-2)
       elseif kp.code == kb.keys.enter then
 --        computer.beep(750,0.1)
         break
@@ -82,9 +81,14 @@ function io.read()
       end
 --      computer.beep(1200,0.1)
     end
+    
     x = stx
-    gpu.fill(x,y,w,y," ")
-    io.write(rtn)
+    gpu.fill(stx,y,w,y," ")
+    if not substituteChar then
+      io.write(rtn:lower())
+    else
+      io.write(string.rep(substituteChar, #rtn))
+    end
   end
 --  computer.beep(500,0.1)
   newline()

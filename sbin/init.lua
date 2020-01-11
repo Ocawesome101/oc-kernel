@@ -2,8 +2,21 @@
 
 local args = {...}
 
+if kernel then
+  require("errors").error("Init is already running")
+  return
+end
+
 _G.gpu = args[1]
 local status = args[2]
+
+status("Wrapping computer.pullSignal")
+local ok, err = loadfile("/lib/signals.lua")
+if not ok then
+  error("Failed to load /lib/signals.lua: " .. err)
+end
+
+_G.pullEvent = ok()
 
 status("Loading task scheduler")
 local ok, err = loadfile("/lib/multithread.lua")
@@ -13,11 +26,11 @@ end
 
 _G.kernel = ok()
 
-status("Detectimg color ability")
+status("Detecting color ability")
 local colordepth = gpu.maxDepth()
 gpu.setDepth(colordepth)
 
-status("Initializing dofile")
+status("Initializing dofile and require")
 function dofile(file)
   local ok, err = loadfile(file)
   if not ok then
@@ -27,11 +40,24 @@ function dofile(file)
   return ok()
 end
 
+function require(api)
+  return dofile("/lib/require/" .. api .. ".lua")
+end
+
 local w, h = gpu.getResolution()
 
 function clear()
   gpu.fill(1,1,w,h," ")
   computer.pullSignal(0)
+end
+
+status("Initializing function tcopy")
+function tcopy(tbl)
+  local rtn = {}
+  for k,v in pairs(tbl) do
+    rtn[k] = v
+  end
+  return rtn
 end
 
 status("Loading keyboard library")
@@ -50,11 +76,14 @@ end
 
 _G.io = ok()
 
-status("Starting component listener")
-kernel.psinit("/lib/component_listener.lua")
+status("Loading user subsystem")
+dofile("/lib/users.lua")
 
-status("Starting shell")
-kernel.psinit("/bin/sh.lua")
+status("Wrapping the FS library for file protection")
+dofile("/lib/filesystem.lua")
+
+status("Starting login screen")
+kernel.psinit("/bin/login.lua")
 
 clear()
 
@@ -62,5 +91,5 @@ while true do
   kernel.psupdate()
 end
 
-
---loadfile("/bin/sh.lua")()
+status("WARNING: Loading in single-user mode!")
+loadfile("/bin/ocsh.lua")()

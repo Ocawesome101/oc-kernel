@@ -1,8 +1,6 @@
 -- A shell. Finally, a shell! --
--- Slightly modified to work on OpenComputers. --
 
 local args = {...}
-
 
 if #args >= 1 then
   shell.runScript(args[1])
@@ -67,7 +65,7 @@ local shellVars = {
   },
   {
     name = "$HOSTNAME",
-    value = "localhost"
+    value = sys.hostname
   },
   {
     name = "$PWD",
@@ -139,7 +137,6 @@ local function runBuiltin(prg, ...)
 end
 
 local function tokenize( ... ) -- Straight out of the craftOS shell :P
-    print("tokenize")
     local sLine = table.concat( { ... }, " " )
     local tWords = {}
     local bQuoted = false
@@ -215,15 +212,7 @@ function shell.setVar(n, v)
 end
 
 function shell.getVar(n)
-  for i=1, #shellVars, 1 do
-    if shellVars[i].name == n then
-      if type(shellVars[i].value) == "function" then
-        return shellVars[i].value()
-      else
-        return shellVars[i].value
-      end
-    end
-  end
+  return shell.parse(n)[1]
 end
 
 function shell.listVars()
@@ -320,8 +309,9 @@ function shell.run(...)
         errors.error(e)
         return
       end
-      
-      pcall(function()p(table.unpack(args))end)
+
+      setfenv(p, _G)
+      p(table.unpack(args))
     else
       errors.programNotFoundError(a[1])
     end
@@ -357,7 +347,8 @@ while not exit do
   else
     prompt = prompt .. "$ "
   end
-  io.write(prompt)
-  local cmd = io.read()
-  coroutine.yield(shell.run(cmd))
+
+  write(prompt)
+  local cmd = read()
+  shell.run(cmd)
 end
